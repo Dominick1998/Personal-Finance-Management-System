@@ -20,5 +20,5 @@ A web application that helps users manage their personal finances, including bud
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/personal-finance-management-system.git
-   cd personal-finance-management-system
+   git clone https://github.com/Dominick1998/Personal-Finance-Management-System.git
+   cd Personal-Finance-Management-System
