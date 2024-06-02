@@ -10,4 +10,13 @@
       {{ form.username.label }} {{ form.username(class="form-control") }}
     </div>
     <div class="form-group">
-      {{ form.password.label }} {{ form.password(class="form-control
+      {{ form.password.label }} {{ form.password(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.remember_me() }} {{ form.remember_me.label }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
