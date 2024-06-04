@@ -1,0 +1,19 @@
+/* app/static/css/style.css */
+
+/* Add your custom CSS styles here */
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.alert {
+    margin-top: 10px;
+}
