@@ -1,13 +1,22 @@
 /* app/static/css/style.css */
 
-/* Add your custom CSS styles here */
-
+/* Global styles */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
 }
 
 .navbar {
     margin-bottom: 20px;
+    background-color: #007bff;
+}
+
+.navbar-brand {
+    color: #fff !important;
+}
+
+.navbar-nav .nav-link {
+    color: #fff !important;
 }
 
 .container {
@@ -16,4 +25,113 @@ body {
 
 .alert {
     margin-top: 10px;
+}
+
+/* Form styles */
+form {
+    margin-top: 20px;
+}
+
+.form-control {
+    border-radius: 0.25rem;
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+    border-radius: 0.25rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Table styles */
+.table {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Custom classes for specific elements */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile-header .profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-header .profile-info img {
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.profile-header .profile-info h2 {
+    margin: 0;
+}
+
+.profile-header .profile-actions {
+    display: flex;
+    align-items: center;
+}
+
+.profile-header .profile-actions .btn {
+    margin-left: 10px;
+}
+
+/* Additional utility classes */
+.mt-5 {
+    margin-top: 3rem !important;
+}
+
+.mb-5 {
+    margin-bottom: 3rem !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
 }
