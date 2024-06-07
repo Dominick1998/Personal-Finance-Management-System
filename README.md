@@ -47,9 +47,29 @@ A web application that helps users manage their personal finances, including bud
    flask run
    ```
 
-## Contributing
+# Contributing to Personal Finance Management System
 
-Contributions are welcome! Please open an issue or submit a pull request for any changes.
+Thank you for considering contributing to our project! Here are some guidelines to help you get started.
+
+## How to Contribute
+
+### Reporting Issues
+
+If you find a bug or have a feature request, please create an issue in our GitHub repository. Include as much detail as possible to help us understand and address the issue.
+
+### Submitting Pull Requests
+
+1. Fork the repository and create your branch from `main`.
+2. Ensure your code follows our coding standards.
+3. Include tests for your changes.
+4. Ensure all tests pass.
+5. Submit a pull request and provide a detailed description of your changes.
+
+### Coding Standards
+
+- Follow PEP 8 for Python code.
+- Use meaningful variable and function names.
+- Write clear and concise comments.
 
 ## License
 
