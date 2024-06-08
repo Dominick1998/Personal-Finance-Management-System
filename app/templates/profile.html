@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+  <h1>Profile</h1>
+  <form method="POST" action="{{ url_for('profile') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.username.label }} {{ form.username(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.email.label }} {{ form.email(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+  <a href="{{ url_for('change_password') }}" class="btn btn-secondary mt-3">Change Password</a>
+{% endblock %}
