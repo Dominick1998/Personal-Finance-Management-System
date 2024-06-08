@@ -1,0 +1,32 @@
+<!-- app/templates/report.html -->
+
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+  <h1>Financial Reports</h1>
+  <canvas id="expenseChart" width="400" height="200"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var ctx = document.getElementById('expenseChart').getContext('2d');
+    var expenseChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ labels|tojson }},
+        datasets: [{
+          label: 'Expenses',
+          data: {{ data|tojson }},
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+{% endblock %}
