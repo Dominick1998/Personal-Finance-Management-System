@@ -122,4 +122,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [React](https://reactjs.org/)
 - [Chart.js](https://www.chartjs.org/)
 - [Bootstrap](https://getbootstrap.com/)
-```
