@@ -1,0 +1,32 @@
+<!-- app/templates/analytics.html -->
+
+{% extends "base.html" %}
+{% block title %}Financial Analytics{% endblock %}
+{% block content %}
+  <h1>Financial Analytics</h1>
+  <canvas id="spendingTrendChart" width="400" height="200"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var ctx = document.getElementById('spendingTrendChart').getContext('2d');
+    var spendingTrendChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: {{ labels|tojson }},
+        datasets: [{
+          label: 'Spending Trend',
+          data: {{ data|tojson }},
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+{% endblock %}
