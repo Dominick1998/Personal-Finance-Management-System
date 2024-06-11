@@ -1,11 +1,23 @@
 # app/routes.py
 
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm
 from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
+from functools import wraps
+
+def admin_required(f):
+    """
+    Decorator to restrict access to admin users.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.role != 'admin':
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/')
 @app.route('/index')
@@ -71,12 +83,14 @@ def profile():
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.email = form.email.data
+        current_user.currency = form.currency.data  # Save selected currency
         db.session.commit()
         flash('Your profile has been updated!', 'success')
         return redirect(url_for('profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
+        form.currency.data = current_user.currency  # Pre-select user's currency
     return render_template('profile.html', title='Profile', form=form)
 
 @app.route('/change_password', methods=['GET', 'POST'])
@@ -96,13 +110,23 @@ def change_password():
             flash('Old password is incorrect.', 'danger')
     return render_template('change_password.html', title='Change Password', form=form)
 
-@app.route('/report')
+@app.route('/admin')
 @login_required
-def report():
+@admin_required
+def admin_dashboard():
     """
-    Financial report page route.
+    Admin dashboard route.
+    """
+    return render_template('admin_dashboard.html', title='Admin Dashboard')
+
+@app.route('/analytics')
+@login_required
+def analytics():
+    """
+    Financial analytics page route.
+    Provides data for financial trend analysis.
     """
     # Example data, replace with your query to fetch actual data
     labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
     data = [100, 200, 150, 300, 250, 400, 350]
-    return render_template('report.html', labels=labels, data=data)
+    return render_template('analytics.html', labels=labels, data=data)
