@@ -1,0 +1,17 @@
+<!-- app/templates/enable_2fa.html -->
+
+{% extends "base.html" %}
+{% block title %}Enable 2FA{% endblock %}
+{% block content %}
+  <h1>Enable Two-Factor Authentication</h1>
+  <form method="POST" action="{{ url_for('enable_2fa') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      <label>Scan the QR code with your authenticator app</label>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ secret }}&amp;size=200x200" alt="QR Code">
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
