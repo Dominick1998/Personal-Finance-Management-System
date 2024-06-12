@@ -1,0 +1,34 @@
+<!-- app/templates/recurring_transactions.html -->
+
+{% extends "base.html" %}
+{% block title %}Recurring Transactions{% endblock %}
+{% block content %}
+  <h1>Recurring Transactions</h1>
+  <form method="POST" action="{{ url_for('recurring_transactions') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.amount.label }} {{ form.amount(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.category.label }} {{ form.category(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.interval.label }} {{ form.interval(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.next_date.label }} {{ form.next_date(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+
+  <h2 class="mt-4">Existing Recurring Transactions</h2>
+  <ul class="list-group">
+    {% for transaction in transactions %}
+      <li class="list-group-item">
+        {{ transaction.amount }} - {{ transaction.category }} ({{ transaction.interval }}) - Next: {{ transaction.next_date }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
