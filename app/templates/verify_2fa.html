@@ -1,0 +1,16 @@
+<!-- app/templates/verify_2fa.html -->
+
+{% extends "base.html" %}
+{% block title %}Verify 2FA{% endblock %}
+{% block content %}
+  <h1>Verify Two-Factor Authentication</h1>
+  <form method="POST" action="{{ url_for('verify_2fa') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.token.label }} {{ form.token(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
