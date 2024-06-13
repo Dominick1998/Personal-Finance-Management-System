@@ -19,6 +19,12 @@ A comprehensive web application designed to help users manage their personal fin
 - **Notifications and Reminders**: Email/SMS notifications and reminders.
 - **Admin Panel**: Manage users, transactions, and system settings.
 - **Audit Logs**: Keep track of user activities for security and accountability.
+- **User Roles and Permissions**: Different roles with specific permissions to manage access control.
+- **Financial Analytics**: Detailed financial analytics and insights, such as spending trends and forecasting.
+- **Multi-Currency Support**: Manage finances in different currencies with real-time currency conversion.
+- **User Activity Log**: Track and display user activities within the application.
+- **Two-Factor Authentication (2FA)**: Enhance security by requiring a second form of authentication.
+- **Advanced Search and Filtering**: Implement advanced search and filtering options for transactions and reports.
 
 ## Tech Stack
 
