@@ -1,7 +1,7 @@
 # app/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
 
@@ -91,3 +91,18 @@ class SearchForm(FlaskForm):
     end_date = DateTimeField('End Date', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
     category = StringField('Category')
     submit = SubmitField('Search')
+
+class InvestmentForm(FlaskForm):
+    """
+    Form for managing investments.
+    """
+    name = StringField('Investment Name', validators=[DataRequired()])
+    amount = FloatField('Amount', validators=[DataRequired()])
+    submit = SubmitField('Add Investment')
+
+class TransactionForm(FlaskForm):
+    """
+    Form for uploading transaction receipt.
+    """
+    receipt = FileField('Receipt', validators=[DataRequired()])
+    submit = SubmitField('Upload Receipt')
