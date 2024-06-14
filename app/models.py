@@ -45,6 +45,7 @@ class Transaction(db.Model):
     amount = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(64), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    receipt = db.Column(db.String(128))  # Path to receipt image
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
@@ -75,3 +76,16 @@ class ActivityLog(db.Model):
 
     def __repr__(self):
         return f'<ActivityLog {self.user_id} {self.action} {self.timestamp}>'
+
+class Investment(db.Model):
+    """
+    Investment model for tracking user investments.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return f'<Investment {self.name} {self.amount}>'
