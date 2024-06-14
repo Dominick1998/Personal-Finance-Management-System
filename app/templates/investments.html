@@ -1,0 +1,28 @@
+<!-- app/templates/investments.html -->
+
+{% extends "base.html" %}
+{% block title %}Investments{% endblock %}
+{% block content %}
+  <h1>Investments</h1>
+  <form method="POST" action="{{ url_for('investments') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.name.label }} {{ form.name(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.amount.label }} {{ form.amount(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+
+  <h2 class="mt-4">Existing Investments</h2>
+  <ul class="list-group">
+    {% for investment in investments %}
+      <li class="list-group-item">
+        {{ investment.name }} - {{ investment.amount }} - Date: {{ investment.date }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
