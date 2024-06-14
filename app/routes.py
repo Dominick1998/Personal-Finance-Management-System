@@ -1,13 +1,15 @@
 # app/routes.py
 
-from flask import render_template, flash, redirect, url_for, request, abort, session
+from flask import render_template, flash, redirect, url_for, request, abort, session, send_from_directory
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm
-from app.models import User, Transaction, RecurringTransaction, ActivityLog
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm
+from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
 from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from functools import wraps
 import pyotp
+import os
 
 def admin_required(f):
     """
@@ -225,3 +227,54 @@ def search():
         transactions = query.all()
         log_activity(current_user.id, 'Performed search')
     return render_template('search.html', title='Search', form=form, transactions=transactions)
+
+@app.route('/investments', methods=['GET', 'POST'])
+@login_required
+def investments():
+    """
+    Manage investments route.
+    """
+    form = InvestmentForm()
+    if form.validate_on_submit():
+        investment = Investment(
+            name=form.name.data,
+            amount=form.amount.data,
+            user_id=current_user.id
+        )
+        db.session.add(investment)
+        db.session.commit()
+        log_activity(current_user.id, 'Added investment')
+        flash('Investment has been added!', 'success')
+        return redirect(url_for('investments'))
+    investments = Investment.query.filter_by(user_id=current_user.id).all()
+    return render_template('investments.html', title='Investments', form=form, investments=investments)
+
+@app.route('/upload_receipt/<int:transaction_id>', methods=['GET', 'POST'])
+@login_required
+def upload_receipt(transaction_id):
+    """
+    Upload receipt for a transaction route.
+    """
+    form = TransactionForm()
+    if form.validate_on_submit():
+        transaction = Transaction.query.get(transaction_id)
+        if transaction.user_id != current_user.id:
+            abort(403)
+        file = form.receipt.data
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        transaction.receipt = filename
+        db.session.commit()
+        log_activity(current_user.id, f'Uploaded receipt for transaction {transaction_id}')
+        flash('Receipt has been uploaded!', 'success')
+        return redirect(url_for('index'))
+    return render_template('upload_receipt.html', title='Upload Receipt', form=form)
+
+@app.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    """
+    Serve uploaded receipt files.
+    """
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
