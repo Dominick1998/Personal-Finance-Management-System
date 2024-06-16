@@ -25,6 +25,9 @@ A comprehensive web application designed to help users manage their personal fin
 - **User Activity Log**: Track and display user activities within the application.
 - **Two-Factor Authentication (2FA)**: Enhance security by requiring a second form of authentication.
 - **Advanced Search and Filtering**: Implement advanced search and filtering options for transactions and reports.
+- **Expense Receipt Upload**: Upload and store digital copies of expense receipts.
+- **Investment Tracking**: Track investments and portfolios, including stocks, bonds, and mutual funds.
+- **Backup and Restore**: Backup user data and restore it when needed.
 
 ## Tech Stack
 
@@ -128,3 +131,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [React](https://reactjs.org/)
 - [Chart.js](https://www.chartjs.org/)
 - [Bootstrap](https://getbootstrap.com/)
+```
+
+This updated `README.md` now includes all the new features and enhancements we have implemented, providing a comprehensive overview of the project's capabilities and setup instructions.
