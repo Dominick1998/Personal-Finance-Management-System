@@ -106,3 +106,16 @@ class TransactionForm(FlaskForm):
     """
     receipt = FileField('Receipt', validators=[DataRequired()])
     submit = SubmitField('Upload Receipt')
+
+class BackupForm(FlaskForm):
+    """
+    Form for backing up user data.
+    """
+    submit = SubmitField('Backup Data')
+
+class RestoreForm(FlaskForm):
+    """
+    Form for restoring user data.
+    """
+    backup_file = FileField('Backup File', validators=[DataRequired()])
+    submit = SubmitField('Restore Data')
