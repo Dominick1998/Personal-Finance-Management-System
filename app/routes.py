@@ -1,8 +1,8 @@
 # app/routes.py
 
-from flask import render_template, flash, redirect, url_for, request, abort, session, send_from_directory
+from flask import render_template, flash, redirect, url_for, request, abort, session, send_from_directory, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
@@ -10,6 +10,8 @@ from werkzeug.urls import url_parse
 from functools import wraps
 import pyotp
 import os
+import zipfile
+import json
 
 def admin_required(f):
     """
@@ -278,3 +280,48 @@ def uploaded_file(filename):
     Serve uploaded receipt files.
     """
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/backup', methods=['GET', 'POST'])
+@login_required
+def backup():
+    """
+    Backup user data route.
+    """
+    form = BackupForm()
+    if form.validate_on_submit():
+        user_data = {
+            'transactions': [t.serialize() for t in Transaction.query.filter_by(user_id=current_user.id).all()],
+            'investments': [i.serialize() for i in Investment.query.filter_by(user_id=current_user.id).all()],
+            'recurring_transactions': [rt.serialize() for rt in RecurringTransaction.query.filter_by(user_id=current_user.id).all()]
+        }
+        backup_path = os.path.join(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json')
+        with open(backup_path, 'w') as backup_file:
+            json.dump(user_data, backup_file)
+        flash('Your data has been backed up successfully!', 'success')
+        return send_from_directory(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json', as_attachment=True)
+    return render_template('backup.html', title='Backup Data', form=form)
+
+@app.route('/restore', methods=['GET', 'POST'])
+@login_required
+def restore():
+    """
+    Restore user data route.
+    """
+    form = RestoreForm()
+    if form.validate_on_submit():
+        file = form.backup_file.data
+        if file:
+            data = json.load(file)
+            for t_data in data.get('transactions', []):
+                transaction = Transaction(**t_data)
+                db.session.add(transaction)
+            for i_data in data.get('investments', []):
+                investment = Investment(**i_data)
+                db.session.add(investment)
+            for rt_data in data.get('recurring_transactions', []):
+                recurring_transaction = RecurringTransaction(**rt_data)
+                db.session.add(recurring_transaction)
+            db.session.commit()
+            flash('Your data has been restored successfully!', 'success')
+            return redirect(url_for('index'))
+    return render_template('restore.html', title='Restore Data', form=form)
