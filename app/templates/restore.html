@@ -1,0 +1,16 @@
+<!-- app/templates/restore.html -->
+
+{% extends "base.html" %}
+{% block title %}Restore Data{% endblock %}
+{% block content %}
+  <h1>Restore Your Data</h1>
+  <form method="POST" action="{{ url_for('restore') }}" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.backup_file.label }} {{ form.backup_file(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
