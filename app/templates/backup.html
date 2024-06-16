@@ -1,0 +1,13 @@
+<!-- app/templates/backup.html -->
+
+{% extends "base.html" %}
+{% block title %}Backup Data{% endblock %}
+{% block content %}
+  <h1>Backup Your Data</h1>
+  <form method="POST" action="{{ url_for('backup') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
