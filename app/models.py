@@ -51,6 +51,18 @@ class Transaction(db.Model):
     def __repr__(self):
         return f'<Transaction {self.amount} {self.category}>'
 
+    def serialize(self):
+        """
+        Serialize transaction for backup.
+        """
+        return {
+            'amount': self.amount,
+            'category': self.category,
+            'date': self.date.isoformat(),
+            'receipt': self.receipt,
+            'user_id': self.user_id
+        }
+
 class RecurringTransaction(db.Model):
     """
     RecurringTransaction model for storing recurring income and expense details.
@@ -64,6 +76,18 @@ class RecurringTransaction(db.Model):
 
     def __repr__(self):
         return f'<RecurringTransaction {self.amount} {self.category} {self.interval}>'
+
+    def serialize(self):
+        """
+        Serialize recurring transaction for backup.
+        """
+        return {
+            'amount': self.amount,
+            'category': self.category,
+            'interval': self.interval,
+            'next_date': self.next_date.isoformat(),
+            'user_id': self.user_id
+        }
 
 class ActivityLog(db.Model):
     """
@@ -89,3 +113,14 @@ class Investment(db.Model):
 
     def __repr__(self):
         return f'<Investment {self.name} {self.amount}>'
+
+    def serialize(self):
+        """
+        Serialize investment for backup.
+        """
+        return {
+            'name': self.name,
+            'amount': self.amount,
+            'date': self.date.isoformat(),
+            'user_id': self.user_id
+        }
