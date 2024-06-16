@@ -3,3 +3,5 @@ Flask-SQLAlchemy==2.5.1
 Flask-Login==0.5.0
 Flask-Migrate==3.1.0
 python-dotenv==0.19.2
+pyotp==2.6.0
+Werkzeug==2.0.1
