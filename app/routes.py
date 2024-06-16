@@ -10,7 +10,6 @@ from werkzeug.urls import url_parse
 from functools import wraps
 import pyotp
 import os
-import zipfile
 import json
 
 def admin_required(f):
@@ -289,12 +288,15 @@ def backup():
     """
     form = BackupForm()
     if form.validate_on_submit():
+        # Collect user data for backup
         user_data = {
             'transactions': [t.serialize() for t in Transaction.query.filter_by(user_id=current_user.id).all()],
             'investments': [i.serialize() for i in Investment.query.filter_by(user_id=current_user.id).all()],
             'recurring_transactions': [rt.serialize() for rt in RecurringTransaction.query.filter_by(user_id=current_user.id).all()]
         }
+        # Define backup file path
         backup_path = os.path.join(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json')
+        # Save data to backup file
         with open(backup_path, 'w') as backup_file:
             json.dump(user_data, backup_file)
         flash('Your data has been backed up successfully!', 'success')
@@ -309,15 +311,19 @@ def restore():
     """
     form = RestoreForm()
     if form.validate_on_submit():
+        # Get uploaded backup file
         file = form.backup_file.data
         if file:
             data = json.load(file)
+            # Restore transactions
             for t_data in data.get('transactions', []):
                 transaction = Transaction(**t_data)
                 db.session.add(transaction)
+            # Restore investments
             for i_data in data.get('investments', []):
                 investment = Investment(**i_data)
                 db.session.add(investment)
+            # Restore recurring transactions
             for rt_data in data.get('recurring_transactions', []):
                 recurring_transaction = RecurringTransaction(**rt_data)
                 db.session.add(recurring_transaction)
