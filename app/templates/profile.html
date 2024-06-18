@@ -21,4 +21,56 @@
   </form>
   <a href="{{ url_for('change_password') }}" class="btn btn-secondary mt-3">Change Password</a>
   <a href="{{ url_for('enable_2fa') }}" class="btn btn-secondary mt-3">Enable 2FA</a>
+  <h2 class="mt-5">Dashboard Configuration</h2>
+  <form id="dashboardConfigForm" method="POST" action="{{ url_for('dashboard_config') }}">
+    <div class="form-group">
+      <label for="widgetTitle">Widget Title</label>
+      <input type="text" class="form-control" id="widgetTitle" name="widgetTitle">
+    </div>
+    <div class="form-group">
+      <label for="widgetContent">Widget Content</label>
+      <textarea class="form-control" id="widgetContent" name="widgetContent"></textarea>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="addWidget()">Add Widget</button>
+  </form>
+  <div id="widgetPreview" class="mt-4"></div>
+{% endblock %}
+{% block scripts %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // JavaScript to handle dashboard widget customization
+      function addWidget() {
+        const title = document.getElementById('widgetTitle').value;
+        const content = document.getElementById('widgetContent').value;
+        const widgetPreview = document.getElementById('widgetPreview');
+        
+        const widgetDiv = document.createElement('div');
+        widgetDiv.className = 'widget';
+        widgetDiv.innerHTML = `<h2>${title}</h2><p>${content}</p>`;
+        
+        widgetPreview.appendChild(widgetDiv);
+        
+        const formData = {
+          widgets: [
+            ...JSON.parse('{{ dashboard_config|tojson }}').widgets,
+            { title, content }
+          ]
+        };
+        
+        fetch('{{ url_for('dashboard_config') }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert('Widget added successfully!');
+          }
+        });
+      }
+    });
+  </script>
 {% endblock %}
