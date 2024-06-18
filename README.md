@@ -30,6 +30,7 @@ A comprehensive web application designed to help users manage their personal fin
 - **Expense Receipt Upload**: Upload and store digital copies of expense receipts.
 - **Investment Tracking**: Track investments and portfolios, including stocks, bonds, and mutual funds.
 - **Backup and Restore**: Backup user data and restore it when needed.
+- **Customizable Dashboards**: Allow users to customize their dashboards with widgets and reports.
 
 ## Tech Stack
 
