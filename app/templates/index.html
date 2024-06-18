@@ -3,6 +3,22 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-  <h1>Welcome to the Personal Finance Management System</h1>
-  <p>Manage your finances effectively with our tools for budgeting, expense tracking, and financial goal setting.</p>
+  <h1>Dashboard</h1>
+  <div id="dashboard" class="container">
+    <!-- Add widgets here based on dashboard_config -->
+    {% for widget in dashboard_config.widgets %}
+      <div class="widget">
+        <h2>{{ widget.title }}</h2>
+        <p>{{ widget.content }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // JavaScript to handle dashboard widget customization
+      console.log("Dashboard loaded and ready.");
+    });
+  </script>
 {% endblock %}
