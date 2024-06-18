@@ -17,6 +17,7 @@ class User(UserMixin, db.Model):
     currency = db.Column(db.String(3), default='USD')  # Preferred currency
     two_factor_enabled = db.Column(db.Boolean, default=False)  # 2FA enabled
     two_factor_secret = db.Column(db.String(32))  # 2FA secret key
+    dashboard_config = db.Column(db.Text, default='{}')  # JSON config for dashboard widgets
 
     def set_password(self, password):
         """
