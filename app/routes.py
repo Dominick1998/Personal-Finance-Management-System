@@ -38,7 +38,9 @@ def index():
     """
     Home page route.
     """
-    return render_template('index.html', title='Home')
+    # Load user dashboard configuration
+    dashboard_config = json.loads(current_user.dashboard_config)
+    return render_template('index.html', title='Home', dashboard_config=dashboard_config)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -331,3 +333,15 @@ def restore():
             flash('Your data has been restored successfully!', 'success')
             return redirect(url_for('index'))
     return render_template('restore.html', title='Restore Data', form=form)
+
+@app.route('/dashboard_config', methods=['POST'])
+@login_required
+def dashboard_config():
+    """
+    Update user dashboard configuration route.
+    """
+    data = request.get_json()
+    current_user.dashboard_config = json.dumps(data)
+    db.session.commit()
+    log_activity(current_user.id, 'Updated dashboard configuration')
+    return jsonify({'status': 'success'})
