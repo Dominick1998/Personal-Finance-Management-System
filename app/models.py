@@ -46,6 +46,7 @@ class Transaction(db.Model):
     amount = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(64), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    description = db.Column(db.String(256), nullable=False)  # Description for categorization
     receipt = db.Column(db.String(128))  # Path to receipt image
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -60,6 +61,7 @@ class Transaction(db.Model):
             'amount': self.amount,
             'category': self.category,
             'date': self.date.isoformat(),
+            'description': self.description,
             'receipt': self.receipt,
             'user_id': self.user_id
         }
