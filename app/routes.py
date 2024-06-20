@@ -2,7 +2,7 @@
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, send_from_directory, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
@@ -11,6 +11,7 @@ from functools import wraps
 import pyotp
 import os
 import json
+import joblib  # For loading the machine learning model
 
 def admin_required(f):
     """
@@ -345,3 +346,24 @@ def dashboard_config():
     db.session.commit()
     log_activity(current_user.id, 'Updated dashboard configuration')
     return jsonify({'status': 'success'})
+
+@app.route('/categorize_transaction/<int:transaction_id>', methods=['GET', 'POST'])
+@login_required
+def categorize_transaction(transaction_id):
+    """
+    Categorize transaction using machine learning model route.
+    """
+    transaction = Transaction.query.get(transaction_id)
+    if transaction.user_id != current_user.id:
+        abort(403)
+    form = CategorizeTransactionForm()
+    if form.validate_on_submit():
+        # Load the trained model (ensure the model is trained and saved in your app directory)
+        model = joblib.load('model/transaction_categorizer.pkl')
+        category = model.predict([form.description.data])
+        transaction.category = category[0]
+        db.session.commit()
+        log_activity(current_user.id, f'Categorized transaction {transaction_id}')
+        flash('Transaction has been categorized!', 'success')
+        return redirect(url_for('index'))
+    return render_template('categorize_transaction.html', title='Categorize Transaction', form=form, transaction=transaction)
