@@ -1,7 +1,7 @@
 # app/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
 
@@ -119,3 +119,10 @@ class RestoreForm(FlaskForm):
     """
     backup_file = FileField('Backup File', validators=[DataRequired()])
     submit = SubmitField('Restore Data')
+
+class CategorizeTransactionForm(FlaskForm):
+    """
+    Form for categorizing a transaction using a machine learning model.
+    """
+    description = TextAreaField('Description', validators=[DataRequired()])
+    submit = SubmitField('Categorize Transaction')
