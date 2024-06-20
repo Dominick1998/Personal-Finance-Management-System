@@ -1,0 +1,16 @@
+<!-- app/templates/categorize_transaction.html -->
+
+{% extends "base.html" %}
+{% block title %}Categorize Transaction{% endblock %}
+{% block content %}
+  <h1>Categorize Transaction</h1>
+  <form method="POST" action="{{ url_for('categorize_transaction', transaction_id=transaction.id) }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.description.label }} {{ form.description(class="form-control", value=transaction.description) }}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+{% endblock %}
