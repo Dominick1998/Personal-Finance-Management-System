@@ -4,6 +4,12 @@ from datetime import datetime
 from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from cryptography.fernet import Fernet
+import base64
+
+# Generate a key for encryption (store this securely)
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
 
 class User(UserMixin, db.Model):
     """
@@ -49,6 +55,7 @@ class Transaction(db.Model):
     description = db.Column(db.String(256), nullable=False)  # Description for categorization
     receipt = db.Column(db.String(128))  # Path to receipt image
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    encrypted_data = db.Column(db.Text)  # Encrypted data column
 
     def __repr__(self):
         return f'<Transaction {self.amount} {self.category}>'
@@ -65,6 +72,25 @@ class Transaction(db.Model):
             'receipt': self.receipt,
             'user_id': self.user_id
         }
+
+    def encrypt(self):
+        """
+        Encrypt sensitive data.
+        """
+        data = f"{self.amount}|{self.category}|{self.date}|{self.description}|{self.receipt}"
+        self.encrypted_data = cipher_suite.encrypt(data.encode()).decode()
+
+    def decrypt(self):
+        """
+        Decrypt sensitive data.
+        """
+        decrypted_data = cipher_suite.decrypt(self.encrypted_data.encode()).decode()
+        amount, category, date, description, receipt = decrypted_data.split('|')
+        self.amount = float(amount)
+        self.category = category
+        self.date = datetime.fromisoformat(date)
+        self.description = description
+        self.receipt = receipt
 
 class RecurringTransaction(db.Model):
     """
