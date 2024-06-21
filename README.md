@@ -31,6 +31,10 @@ A comprehensive web application designed to help users manage their personal fin
 - **Investment Tracking**: Track investments and portfolios, including stocks, bonds, and mutual funds.
 - **Backup and Restore**: Backup user data and restore it when needed.
 - **Customizable Dashboards**: Allow users to customize their dashboards with widgets and reports.
+- **Integration with Financial APIs (e.g., Plaid)**: Automatically import transactions from bank accounts.
+- **Encryption of Sensitive Data**: Encrypt sensitive data such as user information and transaction details.
+- **Scheduled and Automated Email Reports**: Send periodic financial reports to users via email.
+- **User Feedback and Support System**: Allow users to submit feedback and support requests within the application.
 
 ## Tech Stack
 
