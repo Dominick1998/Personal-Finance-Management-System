@@ -2,8 +2,9 @@
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, send_from_directory, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
+from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -300,7 +301,7 @@ def backup():
         # Define backup file path
         backup_path = os.path.join(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json')
         # Save data to backup file
-        with open(backup_path, 'w') as backup_file:
+        with open(backup_path, 'w') as backup_file):
             json.dump(user_data, backup_file)
         flash('Your data has been backed up successfully!', 'success')
         return send_from_directory(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json', as_attachment=True)
@@ -367,3 +368,30 @@ def categorize_transaction(transaction_id):
         flash('Transaction has been categorized!', 'success')
         return redirect(url_for('index'))
     return render_template('categorize_transaction.html', title='Categorize Transaction', form=form, transaction=transaction)
+
+@app.route('/plaid_link', methods=['GET', 'POST'])
+@login_required
+def plaid_link():
+    """
+    Link bank account with Plaid route.
+    """
+    form = PlaidLinkForm()
+    if form.validate_on_submit():
+        # Plaid link token process should be implemented here
+        access_token = 'YOUR_PLAID_ACCESS_TOKEN'
+        accounts = get_accounts(access_token)
+        transactions = get_transactions(access_token, start_date='2023-01-01', end_date='2023-12-31')
+        for txn in transactions:
+            new_transaction = Transaction(
+                amount=txn['amount'],
+                category=txn['category'][0],
+                date=txn['date'],
+                description=txn['name'],
+                user_id=current_user.id
+            )
+            db.session.add(new_transaction)
+        db.session.commit()
+        log_activity(current_user.id, 'Linked bank account with Plaid')
+        flash('Bank account linked and transactions imported!', 'success')
+        return redirect(url_for('index'))
+    return render_template('plaid_link.html', title='Link Bank Account', form=form)
