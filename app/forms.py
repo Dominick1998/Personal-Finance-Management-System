@@ -126,3 +126,10 @@ class CategorizeTransactionForm(FlaskForm):
     """
     description = TextAreaField('Description', validators=[DataRequired()])
     submit = SubmitField('Categorize Transaction')
+
+class PlaidLinkForm(FlaskForm):
+    """
+    Form for linking bank account with Plaid.
+    """
+    public_token = StringField('Public Token', validators=[DataRequired()])
+    submit = SubmitField('Link Account')
