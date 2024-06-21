@@ -270,6 +270,7 @@ def upload_receipt(transaction_id):
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         transaction.receipt = filename
+        transaction.encrypt()  # Encrypt sensitive data
         db.session.commit()
         log_activity(current_user.id, f'Uploaded receipt for transaction {transaction_id}')
         flash('Receipt has been uploaded!', 'success')
@@ -322,6 +323,7 @@ def restore():
             # Restore transactions
             for t_data in data.get('transactions', []):
                 transaction = Transaction(**t_data)
+                transaction.decrypt()  # Decrypt sensitive data
                 db.session.add(transaction)
             # Restore investments
             for i_data in data.get('investments', []):
@@ -389,6 +391,7 @@ def plaid_link():
                 description=txn['name'],
                 user_id=current_user.id
             )
+            new_transaction.encrypt()  # Encrypt sensitive data
             db.session.add(new_transaction)
         db.session.commit()
         log_activity(current_user.id, 'Linked bank account with Plaid')
