@@ -5,3 +5,7 @@ Flask-Migrate==3.1.0
 python-dotenv==0.19.2
 pyotp==2.6.0
 Werkzeug==2.0.1
+cryptography==3.4.7  # For encrypting sensitive data
+plaid-python==8.1.0  # For Plaid API integration
+joblib==1.0.1  # For loading machine learning models
+requests==2.25.1  # For handling HTTP requests (used by Plaid API)
