@@ -1,10 +1,9 @@
 # app/routes.py
 
-from flask import render_template, flash, redirect, url_for, request, abort, session, send_from_directory, jsonify
-from app import app, db
+from flask import render_template, flash, redirect, url_for, request, abort, session
+from app import app, db, google, limiter
 from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
-from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -12,7 +11,7 @@ from functools import wraps
 import pyotp
 import os
 import json
-import joblib  # For loading the machine learning model
+import joblib
 
 def admin_required(f):
     """
@@ -45,6 +44,7 @@ def index():
     return render_template('index.html', title='Home', dashboard_config=dashboard_config)
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("10 per minute")  # Rate limiting for login attempts
 def login():
     """
     Login page route.
@@ -67,6 +67,46 @@ def login():
             next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
+
+@app.route('/login/google')
+def login_google():
+    """
+    Google login route.
+    """
+    return google.authorize(callback=url_for('authorized', _external=True))
+
+@app.route('/login/google/authorized')
+def authorized():
+    """
+    Google login callback route.
+    """
+    response = google.authorized_response()
+    if response is None or response.get('access_token') is None:
+        flash('Access denied: reason={} error={}'.format(
+            request.args['error_reason'],
+            request.args['error_description']
+        ))
+        return redirect(url_for('login'))
+
+    session['google_token'] = (response['access_token'], '')
+    user_info = google.get('userinfo')
+    # Implement your logic to handle user info and login/register the user
+    # Example: Check if user exists, if not, create a new user
+    user = User.query.filter_by(email=user_info.data['email']).first()
+    if user is None:
+        user = User(username=user_info.data['email'], email=user_info.data['email'])
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    log_activity(user.id, 'User logged in with Google')
+    return redirect(url_for('index'))
+
+@google.tokengetter
+def get_google_oauth_token():
+    """
+    Retrieve Google OAuth token.
+    """
+    return session.get('google_token')
 
 @app.route('/logout')
 def logout():
@@ -270,7 +310,6 @@ def upload_receipt(transaction_id):
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         transaction.receipt = filename
-        transaction.encrypt()  # Encrypt sensitive data
         db.session.commit()
         log_activity(current_user.id, f'Uploaded receipt for transaction {transaction_id}')
         flash('Receipt has been uploaded!', 'success')
@@ -293,16 +332,13 @@ def backup():
     """
     form = BackupForm()
     if form.validate_on_submit():
-        # Collect user data for backup
         user_data = {
             'transactions': [t.serialize() for t in Transaction.query.filter_by(user_id=current_user.id).all()],
             'investments': [i.serialize() for i in Investment.query.filter_by(user_id=current_user.id).all()],
             'recurring_transactions': [rt.serialize() for rt in RecurringTransaction.query.filter_by(user_id=current_user.id).all()]
         }
-        # Define backup file path
         backup_path = os.path.join(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json')
-        # Save data to backup file
-        with open(backup_path, 'w') as backup_file):
+        with open(backup_path, 'w') as backup_file:
             json.dump(user_data, backup_file)
         flash('Your data has been backed up successfully!', 'success')
         return send_from_directory(app.config['BACKUP_FOLDER'], f'backup_{current_user.id}.json', as_attachment=True)
@@ -316,20 +352,15 @@ def restore():
     """
     form = RestoreForm()
     if form.validate_on_submit():
-        # Get uploaded backup file
         file = form.backup_file.data
         if file:
             data = json.load(file)
-            # Restore transactions
             for t_data in data.get('transactions', []):
                 transaction = Transaction(**t_data)
-                transaction.decrypt()  # Decrypt sensitive data
                 db.session.add(transaction)
-            # Restore investments
             for i_data in data.get('investments', []):
                 investment = Investment(**i_data)
                 db.session.add(investment)
-            # Restore recurring transactions
             for rt_data in data.get('recurring_transactions', []):
                 recurring_transaction = RecurringTransaction(**rt_data)
                 db.session.add(recurring_transaction)
@@ -361,7 +392,6 @@ def categorize_transaction(transaction_id):
         abort(403)
     form = CategorizeTransactionForm()
     if form.validate_on_submit():
-        # Load the trained model (ensure the model is trained and saved in your app directory)
         model = joblib.load('model/transaction_categorizer.pkl')
         category = model.predict([form.description.data])
         transaction.category = category[0]
@@ -379,7 +409,6 @@ def plaid_link():
     """
     form = PlaidLinkForm()
     if form.validate_on_submit():
-        # Plaid link token process should be implemented here
         access_token = 'YOUR_PLAID_ACCESS_TOKEN'
         accounts = get_accounts(access_token)
         transactions = get_transactions(access_token, start_date='2023-01-01', end_date='2023-12-31')
@@ -391,7 +420,6 @@ def plaid_link():
                 description=txn['name'],
                 user_id=current_user.id
             )
-            new_transaction.encrypt()  # Encrypt sensitive data
             db.session.add(new_transaction)
         db.session.commit()
         log_activity(current_user.id, 'Linked bank account with Plaid')
