@@ -4,6 +4,14 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
+from password_strength import PasswordPolicy
+
+policy = PasswordPolicy.from_names(
+    length=8,
+    uppercase=1,
+    numbers=1,
+    special=1,
+)
 
 class LoginForm(FlaskForm):
     """
@@ -40,6 +48,14 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+    def validate_password(self, password):
+        """
+        Validate that the password meets the strength requirements.
+        """
+        errors = policy.test(password.data)
+        if errors:
+            raise ValidationError('Password must be at least 8 characters long and include one uppercase letter, one number, and one special character.')
 
 class ProfileForm(FlaskForm):
     """
