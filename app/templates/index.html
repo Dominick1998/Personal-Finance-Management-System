@@ -1,24 +1,38 @@
 <!-- app/templates/index.html -->
 
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
 {% block content %}
-  <h1>Dashboard</h1>
-  <div id="dashboard" class="container">
-    <!-- Add widgets here based on dashboard_config -->
-    {% for widget in dashboard_config.widgets %}
-      <div class="widget">
-        <h2>{{ widget.title }}</h2>
-        <p>{{ widget.content }}</p>
-      </div>
-    {% endfor %}
-  </div>
-{% endblock %}
-{% block scripts %}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // JavaScript to handle dashboard widget customization
-      console.log("Dashboard loaded and ready.");
+<div id="tour">
+    <h1>Welcome to the Personal Finance Management System!</h1>
+    <!-- Your existing content -->
+</div>
+<script src="https://unpkg.com/shepherd.js@8.0.0/dist/js/shepherd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/shepherd.js@8.0.0/dist/css/shepherd.css"/>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tour = new Shepherd.Tour({
+      useModalOverlay: true,
+      defaultStepOptions: {
+        classes: 'shepherd-theme-arrows',
+        scrollTo: true
+      }
     });
-  </script>
+
+    tour.addStep({
+      text: 'Welcome to the Personal Finance Management System!',
+      attachTo: {
+        element: '#tour',
+        on: 'bottom'
+      },
+      buttons: [
+        {
+          text: 'Next',
+          action: tour.next
+        }
+      ]
+    });
+
+    tour.start();
+  });
+</script>
 {% endblock %}
