@@ -1,14 +1,14 @@
-Flask==2.0.1
-Flask-SQLAlchemy==2.5.1
-Flask-Login==0.5.0
-Flask-Migrate==3.1.0
-python-dotenv==0.19.2
-pyotp==2.6.0
-Werkzeug==2.0.1
+Flask==2.0.1  # Web framework for creating the application backend
+Flask-SQLAlchemy==2.5.1  # ORM for managing database interactions
+Flask-Login==0.5.0  # User session management for login functionality
+Flask-Migrate==3.1.0  # Database migration tool
+python-dotenv==0.19.2  # For loading environment variables from a .env file
+pyotp==2.6.0  # For two-factor authentication (2FA)
+Werkzeug==2.0.1  # WSGI utility library
 cryptography==3.4.7  # For encrypting sensitive data
-plaid-python==8.1.0  # For Plaid API integration
+plaid-python==8.1.0  # For Plaid API integration to fetch bank account data
 joblib==1.0.1  # For loading machine learning models
 requests==2.25.1  # For handling HTTP requests (used by Plaid API)
-Flask-OAuthlib==0.9.6  # For OAuth2 integration
-Flask-Limiter==1.4  # For rate limiting
-password-strength==0.0.3  # For password strength validation
+Flask-OAuthlib==0.9.6  # For OAuth2 integration (e.g., Google login)
+Flask-Limiter==1.4  # For rate limiting to prevent brute force attacks
+password-strength==0.0.3  # For validating password strength
