@@ -17,7 +17,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
-# Initialize OAuth for Google Login
+# Initialize OAuth for Google and Facebook Login
 oauth = OAuth(app)
 
 google = oauth.remote_app(
@@ -32,6 +32,20 @@ google = oauth.remote_app(
     access_token_method='POST',
     access_token_url='https://accounts.google.com/o/oauth2/token',
     authorize_url='https://accounts.google.com/o/oauth2/auth',
+)
+
+facebook = oauth.remote_app(
+    'facebook',
+    consumer_key=app.config['FACEBOOK_CLIENT_ID'],
+    consumer_secret=app.config['FACEBOOK_CLIENT_SECRET'],
+    request_token_params={
+        'scope': 'email',
+    },
+    base_url='https://graph.facebook.com/',
+    request_token_url=None,
+    access_token_method='POST',
+    access_token_url='/oauth/access_token',
+    authorize_url='https://www.facebook.com/dialog/oauth'
 )
 
 # Initialize rate limiter
