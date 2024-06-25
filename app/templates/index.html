@@ -5,6 +5,15 @@
 <div id="tour">
     <h1>Welcome to the Personal Finance Management System!</h1>
     <!-- Your existing content -->
+    <form method="POST" action="{{ url_for('send_notification') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.message.label }} {{ form.message(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
 </div>
 <script src="https://unpkg.com/shepherd.js@8.0.0/dist/js/shepherd.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/shepherd.js@8.0.0/dist/css/shepherd.css"/>
