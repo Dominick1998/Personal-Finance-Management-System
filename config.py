@@ -10,6 +10,8 @@ class Config:
     BACKUP_FOLDER = os.environ.get('BACKUP_FOLDER') or 'backups'
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+    FACEBOOK_CLIENT_ID = os.environ.get('FACEBOOK_CLIENT_ID')
+    FACEBOOK_CLIENT_SECRET = os.environ.get('FACEBOOK_CLIENT_SECRET')
     PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
     PLAID_SECRET = os.environ.get('PLAID_SECRET')
     PLAID_ENV = os.environ.get('PLAID_ENV') or 'sandbox'
