@@ -1,9 +1,10 @@
 # app/routes.py
 
-from flask import render_template, flash, redirect, url_for, request, abort, session
-from app import app, db, google, limiter
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm
+from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify
+from app import app, db, google, facebook, limiter
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
+from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -107,6 +108,46 @@ def get_google_oauth_token():
     Retrieve Google OAuth token.
     """
     return session.get('google_token')
+
+@app.route('/login/facebook')
+def login_facebook():
+    """
+    Facebook login route.
+    """
+    return facebook.authorize(callback=url_for('facebook_authorized', _external=True))
+
+@app.route('/login/facebook/authorized')
+def facebook_authorized():
+    """
+    Facebook login callback route.
+    """
+    response = facebook.authorized_response()
+    if response is None or response.get('access_token') is None:
+        flash('Access denied: reason={} error={}'.format(
+            request.args['error_reason'],
+            request.args['error_description']
+        ))
+        return redirect(url_for('login'))
+
+    session['facebook_token'] = (response['access_token'], '')
+    user_info = facebook.get('me?fields=id,email')
+    # Implement your logic to handle user info and login/register the user
+    # Example: Check if user exists, if not, create a new user
+    user = User.query.filter_by(email=user_info.data['email']).first()
+    if user is None:
+        user = User(username=user_info.data['email'], email=user_info.data['email'])
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    log_activity(user.id, 'User logged in with Facebook')
+    return redirect(url_for('index'))
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+    """
+    Retrieve Facebook OAuth token.
+    """
+    return session.get('facebook_token')
 
 @app.route('/logout')
 def logout():
@@ -426,3 +467,17 @@ def plaid_link():
         flash('Bank account linked and transactions imported!', 'success')
         return redirect(url_for('index'))
     return render_template('plaid_link.html', title='Link Bank Account', form=form)
+
+@app.route('/send_notification', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def send_notification():
+    """
+    Send notification to users.
+    """
+    form = NotificationForm()
+    if form.validate_on_submit():
+        # Logic to send notification (e.g., email, SMS)
+        flash('Notification sent successfully!', 'success')
+        return redirect(url_for('send_notification'))
+    return render_template('send_notification.html', title='Send Notification', form=form)
