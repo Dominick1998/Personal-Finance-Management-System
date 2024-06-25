@@ -9,6 +9,6 @@ cryptography==3.4.7  # For encrypting sensitive data
 plaid-python==8.1.0  # For Plaid API integration to fetch bank account data
 joblib==1.0.1  # For loading machine learning models
 requests==2.25.1  # For handling HTTP requests (used by Plaid API)
-Flask-OAuthlib==0.9.6  # For OAuth2 integration (e.g., Google login)
+Flask-OAuthlib==0.9.6  # For OAuth2 integration (e.g., Google and Facebook login)
 Flask-Limiter==1.4  # For rate limiting to prevent brute force attacks
 password-strength==0.0.3  # For validating password strength
