@@ -35,6 +35,8 @@ A comprehensive web application designed to help users manage their personal fin
 - **Encryption of Sensitive Data**: Encrypt sensitive data such as user information and transaction details.
 - **Scheduled and Automated Email Reports**: Send periodic financial reports to users via email.
 - **User Feedback and Support System**: Allow users to submit feedback and support requests within the application.
+- **OAuth2 Integration**: Log in using Google and Facebook accounts.
+- **Activity Notifications**: Notify users about important activities like budget overages or large transactions.
 
 ## Tech Stack
 
