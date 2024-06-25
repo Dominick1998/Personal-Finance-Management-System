@@ -149,3 +149,10 @@ class PlaidLinkForm(FlaskForm):
     """
     public_token = StringField('Public Token', validators=[DataRequired()])
     submit = SubmitField('Link Account')
+
+class NotificationForm(FlaskForm):
+    """
+    Form for sending notifications to users.
+    """
+    message = TextAreaField('Message', validators=[DataRequired()])
+    submit = SubmitField('Send Notification')
