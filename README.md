@@ -1,5 +1,7 @@
 # Personal Finance Management System
 
+Created by Dominick Ferro 
+
 A comprehensive web application designed to help users manage their personal finances. This includes features for budgeting, expense tracking, financial goal setting, and detailed reports. The application is built using Flask for the backend and React for the frontend, providing a robust and interactive user experience.
 
 ## Features
