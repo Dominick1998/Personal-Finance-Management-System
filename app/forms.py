@@ -1,7 +1,7 @@
 # app/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField, TextAreaField, SelectMultipleField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
 from password_strength import PasswordPolicy
@@ -156,3 +156,14 @@ class NotificationForm(FlaskForm):
     """
     message = TextAreaField('Message', validators=[DataRequired()])
     submit = SubmitField('Send Notification')
+
+class NotificationPreferencesForm(FlaskForm):
+    """
+    Form for managing user notification preferences.
+    """
+    preferences = SelectMultipleField('Notification Preferences', choices=[
+        ('email', 'Email'),
+        ('sms', 'SMS'),
+        ('push', 'Push Notification')
+    ], validators=[DataRequired()])
+    submit = SubmitField('Update Preferences')
