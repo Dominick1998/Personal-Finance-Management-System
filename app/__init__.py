@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_principal import Principal, Permission, RoleNeed
 from config import Config
 
 app = Flask(__name__)
@@ -54,6 +55,13 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"]
 )
+
+# Initialize Flask-Principal for RBAC
+principals = Principal(app)
+
+# Define permissions for different roles
+admin_permission = Permission(RoleNeed('admin'))
+user_permission = Permission(RoleNeed('user'))
 
 from app import routes, models
 
