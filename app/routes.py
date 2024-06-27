@@ -1,9 +1,9 @@
 # app/routes.py
 
-from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify
-from app import app, db, google, facebook, limiter
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm
-from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment
+from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
+from app import app, db, google, facebook, limiter, admin_permission, user_permission
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm
+from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment, Role, UserNotification
 from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
@@ -20,7 +20,18 @@ def admin_required(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.role != 'admin':
+        if not admin_permission.can():
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
+def user_required(f):
+    """
+    Decorator to restrict access to regular users.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not user_permission.can():
             abort(403)
         return f(*args, **kwargs)
     return decorated_function
@@ -225,6 +236,7 @@ def admin_dashboard():
 
 @app.route('/analytics')
 @login_required
+@user_required
 def analytics():
     """
     Financial analytics page route.
@@ -273,6 +285,7 @@ def verify_2fa():
 
 @app.route('/recurring_transactions', methods=['GET', 'POST'])
 @login_required
+@user_required
 def recurring_transactions():
     """
     Manage recurring transactions route.
@@ -296,6 +309,7 @@ def recurring_transactions():
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
+@user_required
 def search():
     """
     Advanced search and filtering route.
@@ -316,6 +330,7 @@ def search():
 
 @app.route('/investments', methods=['GET', 'POST'])
 @login_required
+@user_required
 def investments():
     """
     Manage investments route.
@@ -337,6 +352,7 @@ def investments():
 
 @app.route('/upload_receipt/<int:transaction_id>', methods=['GET', 'POST'])
 @login_required
+@user_required
 def upload_receipt(transaction_id):
     """
     Upload receipt for a transaction route.
@@ -359,6 +375,7 @@ def upload_receipt(transaction_id):
 
 @app.route('/uploads/<filename>')
 @login_required
+@user_required
 def uploaded_file(filename):
     """
     Serve uploaded receipt files.
@@ -367,6 +384,7 @@ def uploaded_file(filename):
 
 @app.route('/backup', methods=['GET', 'POST'])
 @login_required
+@user_required
 def backup():
     """
     Backup user data route.
@@ -387,6 +405,7 @@ def backup():
 
 @app.route('/restore', methods=['GET', 'POST'])
 @login_required
+@user_required
 def restore():
     """
     Restore user data route.
@@ -412,6 +431,7 @@ def restore():
 
 @app.route('/dashboard_config', methods=['POST'])
 @login_required
+@user_required
 def dashboard_config():
     """
     Update user dashboard configuration route.
@@ -424,6 +444,7 @@ def dashboard_config():
 
 @app.route('/categorize_transaction/<int:transaction_id>', methods=['GET', 'POST'])
 @login_required
+@user_required
 def categorize_transaction(transaction_id):
     """
     Categorize transaction using machine learning model route.
@@ -444,6 +465,7 @@ def categorize_transaction(transaction_id):
 
 @app.route('/plaid_link', methods=['GET', 'POST'])
 @login_required
+@user_required
 def plaid_link():
     """
     Link bank account with Plaid route.
@@ -481,3 +503,47 @@ def send_notification():
         flash('Notification sent successfully!', 'success')
         return redirect(url_for('send_notification'))
     return render_template('send_notification.html', title='Send Notification', form=form)
+
+@app.route('/notification_preferences', methods=['GET', 'POST'])
+@login_required
+@user_required
+def notification_preferences():
+    """
+    Manage user notification preferences route.
+    """
+    form = NotificationPreferencesForm()
+    if form.validate_on_submit():
+        current_user.notification_preferences = json.dumps(form.data)
+        db.session.commit()
+        log_activity(current_user.id, 'Updated notification preferences')
+        flash('Notification preferences updated!', 'success')
+        return redirect(url_for('notification_preferences'))
+    elif request.method == 'GET':
+        form.data = json.loads(current_user.notification_preferences or '{}')
+    return render_template('notification_preferences.html', title='Notification Preferences', form=form)
+
+@app.route('/export_data/<format>')
+@login_required
+@user_required
+def export_data(format):
+    """
+    Export user data in specified format (e.g., JSON, PDF).
+    """
+    user_data = {
+        'transactions': [t.serialize() for t in Transaction.query.filter_by(user_id=current_user.id).all()],
+        'investments': [i.serialize() for i in Investment.query.filter_by(user_id=current_user.id).all()],
+        'recurring_transactions': [rt.serialize() for rt in RecurringTransaction.query.filter_by(user_id=current_user.id).all()]
+    }
+
+    if format == 'json':
+        export_path = os.path.join(app.config['EXPORT_FOLDER'], f'export_{current_user.id}.json')
+        with open(export_path, 'w') as export_file:
+            json.dump(user_data, export_file)
+        return send_file(export_path, as_attachment=True)
+
+    elif format == 'pdf':
+        # Logic to export data as PDF
+        pass
+
+    flash('Export format not supported.', 'danger')
+    return redirect(url_for('index'))
