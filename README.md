@@ -1,6 +1,6 @@
 # Personal Finance Management System
 
-Created by Dominick Ferro 
+Created by Dominick Ferro
 
 A comprehensive web application designed to help users manage their personal finances. This includes features for budgeting, expense tracking, financial goal setting, and detailed reports. The application is built using Flask for the backend and React for the frontend, providing a robust and interactive user experience.
 
@@ -37,6 +37,11 @@ A comprehensive web application designed to help users manage their personal fin
 - **User Feedback and Support System**: Allow users to submit feedback and support requests within the application.
 - **OAuth2 Integration**: Log in using Google and Facebook accounts.
 - **Activity Notifications**: Notify users about important activities like budget overages or large transactions.
+- **Role-Based Access Control (RBAC)**: Fine-grained control over what users can do based on their roles.
+- **Customizable Notifications**: Allow users to set preferences for different types of notifications.
+- **Comprehensive Error Handling**: Improve user experience by providing clear error messages and logs.
+- **Audit Trail**: Detailed logging of user actions for security and accountability.
+- **Data Export Options**: Export data in various formats like PDF, JSON, etc.
 
 ## Tech Stack
 
