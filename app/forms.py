@@ -167,3 +167,16 @@ class NotificationPreferencesForm(FlaskForm):
         ('push', 'Push Notification')
     ], validators=[DataRequired()])
     submit = SubmitField('Update Preferences')
+
+class EmailVerificationForm(FlaskForm):
+    """
+    Form for resending email verification.
+    """
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Resend Verification')
+
+class DeleteAccountForm(FlaskForm):
+    """
+    Form for deleting user account.
+    """
+    submit = SubmitField('Delete Account')
