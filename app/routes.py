@@ -1,8 +1,8 @@
 # app/routes.py
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
-from app import app, db, google, facebook, limiter, admin_permission, user_permission
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm
+from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment, Role, UserNotification
 from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
@@ -13,6 +13,8 @@ import pyotp
 import os
 import json
 import joblib
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Message
 
 def admin_required(f):
     """
@@ -44,6 +46,40 @@ def log_activity(user_id, action):
     db.session.add(activity)
     db.session.commit()
 
+def generate_confirmation_token(email):
+    """
+    Generate an email confirmation token.
+    """
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+
+def confirm_token(token, expiration=3600):
+    """
+    Confirm the token and return the email.
+    """
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(
+            token,
+            salt=app.config['SECURITY_PASSWORD_SALT'],
+            max_age=expiration
+        )
+    except:
+        return False
+    return email
+
+def send_email(to, subject, template):
+    """
+    Send an email.
+    """
+    msg = Message(
+        subject,
+        recipients=[to],
+        html=template,
+        sender=app.config['MAIL_DEFAULT_SENDER']
+    )
+    mail.send(msg)
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -69,6 +105,9 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'danger')
             return redirect(url_for('login'))
+        if not user.email_verified:
+            flash('Please verify your email before logging in.', 'warning')
+            return redirect(url_for('resend_verification'))
         if user.two_factor_enabled:
             session['2fa_user_id'] = user.id
             return redirect(url_for('verify_2fa'))
@@ -182,9 +221,46 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!', 'success')
+        token = generate_confirmation_token(user.email)
+        confirm_url = url_for('confirm_email', token=token, _external=True)
+        html = render_template('activate.html', confirm_url=confirm_url)
+        subject = "Please confirm your email"
+        send_email(user.email, subject, html)
+        flash('A confirmation email has been sent via email.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    """
+    Confirm email route.
+    """
+    try:
+        email = confirm_token(token)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for('login'))
+    user = User.query.filter_by(email=email).first_or_404()
+    if user.email_verified:
+        flash('Account already confirmed. Please login.', 'success')
+    else:
+        user.email_verified = True
+        db.session.commit()
+        flash('You have confirmed your account. Thanks!', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/resend')
+def resend_verification():
+    """
+    Resend email verification route.
+    """
+    token = generate_confirmation_token(current_user.email)
+    confirm_url = url_for('confirm_email', token=token, _external=True)
+    html = render_template('activate.html', confirm_url=confirm_url)
+    subject = "Please confirm your email"
+    send_email(current_user.email, subject, html)
+    flash('A new confirmation email has been sent.', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -547,3 +623,20 @@ def export_data(format):
 
     flash('Export format not supported.', 'danger')
     return redirect(url_for('index'))
+
+@app.route('/delete_account', methods=['GET', 'POST'])
+@login_required
+@user_required
+def delete_account():
+    """
+    Delete user account route.
+    """
+    form = DeleteAccountForm()
+    if form.validate_on_submit():
+        user = current_user
+        log_activity(user.id, 'User deleted account')
+        db.session.delete(user)
+        db.session.commit()
+        flash('Your account has been deleted.', 'success')
+        return redirect(url_for('login'))
+    return render_template('delete_account.html', title='Delete Account', form=form)
