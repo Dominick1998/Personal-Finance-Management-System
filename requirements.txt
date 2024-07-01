@@ -15,3 +15,4 @@ password-strength==0.0.3  # For validating password strength
 Flask-Principal==0.4.0  # For role-based access control (RBAC)
 Flask-HTTPAuth==4.2.0  # For HTTP authentication (optional for API endpoints)
 reportlab==3.5.68  # For generating PDF reports
+Flask-Mail==0.9.1  # For sending emails
