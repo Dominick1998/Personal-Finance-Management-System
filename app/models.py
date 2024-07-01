@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     two_factor_enabled = db.Column(db.Boolean, default=False)
     two_factor_secret = db.Column(db.String(32))
+    email_verified = db.Column(db.Boolean, default=False)
     currency = db.Column(db.String(3), default='USD')
     dashboard_config = db.Column(db.Text)
     notification_preferences = db.Column(db.Text)
