@@ -1,5 +1,8 @@
 # app/__init__.py
 
+# This file marks the 'app' directory as a Python package.
+# It may also contain package-level initialization code, such as:
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
