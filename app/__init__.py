@@ -7,7 +7,7 @@
 # - Configuring extensions
 # - Importing and defining package-level variables or functions
 
-
+# The presence of this file allows you to import from the 'app' package 
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
