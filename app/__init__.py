@@ -9,6 +9,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_principal import Principal, Permission, RoleNeed
 from flask_mail import Mail
+from flask_apscheduler import APScheduler
 from config import Config
 
 app = Flask(__name__)
@@ -66,6 +67,11 @@ user_permission = Permission(RoleNeed('user'))
 
 # Initialize Flask-Mail
 mail = Mail(app)
+
+# Initialize APScheduler for scheduled tasks
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 from app import routes, models
 
