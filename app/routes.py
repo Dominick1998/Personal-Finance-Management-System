@@ -1,8 +1,8 @@
 # app/routes.py
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
-from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm
+from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail, scheduler
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm, SocialShareForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment, Role, UserNotification
 from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
@@ -15,6 +15,8 @@ import json
 import joblib
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
+from datetime import datetime
+import requests
 
 def admin_required(f):
     """
@@ -640,3 +642,35 @@ def delete_account():
         flash('Your account has been deleted.', 'success')
         return redirect(url_for('login'))
     return render_template('delete_account.html', title='Delete Account', form=form)
+
+@app.route('/share_goal', methods=['GET', 'POST'])
+@login_required
+@user_required
+def share_goal():
+    """
+    Share financial goal on social media route.
+    """
+    form = SocialShareForm()
+    if form.validate_on_submit():
+        # Logic to share goal on social media (e.g., Twitter, Facebook)
+        flash('Your goal has been shared!', 'success')
+        return redirect(url_for('index'))
+    return render_template('share_goal.html', title='Share Goal', form=form)
+
+@app.route('/convert_currency', methods=['POST'])
+@login_required
+@user_required
+def convert_currency():
+    """
+    Convert currency route.
+    """
+    amount = request.form.get('amount')
+    from_currency = request.form.get('from_currency')
+    to_currency = request.form.get('to_currency')
+
+    # Example: Real-time currency conversion using an API
+    response = requests.get(f'https://api.exchangerate-api.com/v4/latest/{from_currency}')
+    data = response.json()
+    converted_amount = float(amount) * data['rates'][to_currency]
+
+    return jsonify({'converted_amount': converted_amount})
