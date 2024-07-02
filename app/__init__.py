@@ -2,6 +2,8 @@
 
 # This file marks the 'app' directory as a Python package.
 # It may also contain package-level initialization code, such as:
+# - Setting up the application instance
+# - Registering blueprints
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
