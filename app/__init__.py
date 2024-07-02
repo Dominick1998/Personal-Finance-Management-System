@@ -4,6 +4,10 @@
 # It may also contain package-level initialization code, such as:
 # - Setting up the application instance
 # - Registering blueprints
+# - Configuring extensions
+# - Importing and defining package-level variables or functions
+
+
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
