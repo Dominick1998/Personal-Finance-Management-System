@@ -8,6 +8,7 @@
 # - Importing and defining package-level variables or functions
 
 # The presence of this file allows you to import from the 'app' package 
+# in other parts of your project, e.g., 'from app import some_module'.
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
