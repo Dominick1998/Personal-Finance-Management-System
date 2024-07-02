@@ -45,6 +45,13 @@ A comprehensive web application designed to help users manage their personal fin
 - **Email Verification for New Users**: Ensure that new users verify their email address before accessing the application.
 - **User Profile Picture Upload**: Allow users to upload and update their profile pictures.
 - **Account Deletion**: Allow users to delete their accounts, with an optional confirmation step.
+- **Social Sharing of Financial Goals**: Allow users to share their financial goals and achievements on social media.
+- **Expense Analytics Dashboard**: A detailed dashboard providing insights into spending patterns.
+- **Multi-Factor Authentication (MFA)**: Enhance security by implementing MFA with options for SMS or Authenticator apps.
+- **Detailed Logging for Admins**: Provide a detailed logging mechanism for admins to monitor all activities.
+- **Scheduled Backup System**: Automatically backup user data at regular intervals.
+- **Real-time Currency Conversion**: Convert expenses to a user-specified currency in real-time.
+- **AI-based Spending Recommendations**: Provide users with AI-based recommendations to optimize their spending.
 
 ## Tech Stack
 
