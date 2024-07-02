@@ -180,3 +180,10 @@ class DeleteAccountForm(FlaskForm):
     Form for deleting user account.
     """
     submit = SubmitField('Delete Account')
+
+class SocialShareForm(FlaskForm):
+    """
+    Form for sharing financial goals on social media.
+    """
+    message = TextAreaField('Message', validators=[DataRequired()])
+    submit = SubmitField('Share')
