@@ -20,6 +20,7 @@ from flask_limiter.util import get_remote_address
 from flask_principal import Principal, Permission, RoleNeed
 from flask_mail import Mail
 from flask_apscheduler import APScheduler
+from flask_uploads import configure_uploads, IMAGES, UploadSet
 from config import Config
 
 app = Flask(__name__)
@@ -82,6 +83,10 @@ mail = Mail(app)
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
+
+# Configure image uploads
+photos = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
 
 from app import routes, models
 
