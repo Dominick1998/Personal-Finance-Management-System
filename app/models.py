@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin, db.Model):
     """
-    User model for storing the user's details.
+    User model for storing user details.
     """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
     currency = db.Column(db.String(3), default='USD')
     dashboard_config = db.Column(db.Text)
     notification_preferences = db.Column(db.Text)
+    profile_picture = db.Column(db.String(255))  # New field for storing profile picture filename
     roles = db.relationship('Role', secondary='user_roles')
 
     def set_password(self, password):
