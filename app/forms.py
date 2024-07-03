@@ -187,3 +187,10 @@ class SocialShareForm(FlaskForm):
     """
     message = TextAreaField('Message', validators=[DataRequired()])
     submit = SubmitField('Share')
+
+class UploadProfilePictureForm(FlaskForm):
+    """
+    Form for uploading profile picture.
+    """
+    photo = FileField('Profile Picture', validators=[DataRequired()])
+    submit = SubmitField('Upload')
