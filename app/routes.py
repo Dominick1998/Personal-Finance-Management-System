@@ -1,8 +1,8 @@
 # app/routes.py
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
-from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail, scheduler
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm, SocialShareForm
+from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail, scheduler, photos
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm, SocialShareForm, UploadProfilePictureForm
 from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment, Role, UserNotification
 from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
@@ -674,3 +674,20 @@ def convert_currency():
     converted_amount = float(amount) * data['rates'][to_currency]
 
     return jsonify({'converted_amount': converted_amount})
+
+@app.route('/upload_profile_picture', methods=['GET', 'POST'])
+@login_required
+@user_required
+def upload_profile_picture():
+    """
+    Upload profile picture route.
+    """
+    form = UploadProfilePictureForm()
+    if form.validate_on_submit():
+        filename = photos.save(form.photo.data)
+        current_user.profile_picture = filename
+        db.session.commit()
+        log_activity(current_user.id, 'Uploaded profile picture')
+        flash('Profile picture has been uploaded!', 'success')
+        return redirect(url_for('profile'))
+    return render_template('upload_profile_picture.html', title='Upload Profile Picture', form=form)
