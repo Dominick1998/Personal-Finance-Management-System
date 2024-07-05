@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
     notification_preferences = db.Column(db.Text)
     profile_picture = db.Column(db.String(255))  # New field for storing profile picture filename
     roles = db.relationship('Role', secondary='user_roles')
+    notifications = db.relationship('UserNotification', backref='user', lazy='dynamic')
 
     def set_password(self, password):
         """
