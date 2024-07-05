@@ -52,6 +52,9 @@ A comprehensive web application designed to help users manage their personal fin
 - **Scheduled Backup System**: Automatically backup user data at regular intervals.
 - **Real-time Currency Conversion**: Convert expenses to a user-specified currency in real-time.
 - **AI-based Spending Recommendations**: Provide users with AI-based recommendations to optimize their spending.
+- **Mobile App Integration**: API to integrate with a mobile app.
+- **Voice Commands Integration**: Implement voice commands for hands-free interaction.
+- **Visualizations for Future Predictions**: Use machine learning to predict future expenses and visualize them.
 
 ## Tech Stack
 
