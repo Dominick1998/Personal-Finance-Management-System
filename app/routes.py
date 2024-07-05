@@ -691,3 +691,27 @@ def upload_profile_picture():
         flash('Profile picture has been uploaded!', 'success')
         return redirect(url_for('profile'))
     return render_template('upload_profile_picture.html', title='Upload Profile Picture', form=form)
+
+@app.route('/api/voice_commands', methods=['POST'])
+@login_required
+@user_required
+def voice_commands():
+    """
+    Handle voice commands for the application.
+    """
+    command = request.json.get('command')
+    # Logic to process the voice command and return a response
+    response = process_voice_command(command)
+    return jsonify({'response': response})
+
+@app.route('/api/mobile', methods=['POST'])
+@login_required
+@user_required
+def mobile_api():
+    """
+    Mobile API endpoint for integrating with the mobile app.
+    """
+    data = request.json
+    # Logic to handle data from the mobile app
+    process_mobile_data(data)
+    return jsonify({'status': 'success'})
