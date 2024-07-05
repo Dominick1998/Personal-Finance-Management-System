@@ -17,3 +17,4 @@ Flask-HTTPAuth==4.2.0  # For HTTP authentication (optional for API endpoints)
 reportlab==3.5.68  # For generating PDF reports
 Flask-Mail==0.9.1  # For sending emails
 Flask-APScheduler==1.12.4  # For scheduled tasks
+Flask-Swagger-UI==3.36.0  # For API documentation
