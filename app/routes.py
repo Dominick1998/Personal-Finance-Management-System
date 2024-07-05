@@ -2,10 +2,14 @@
 # 
 # This file contains the route definitions for the Personal Finance Management System.
 # It handles HTTP requests and defines the behavior for each route.
+#
 # Key functionalities provided by this file include:
 # - User authentication (login, logout, registration)
 # - Two-factor authentication (2FA) setup and verification
 # - Profile management (view, update, upload profile picture)
+# - Financial operations (transaction tracking, recurring transactions, investments)
+# - Financial analytics and advanced search
+# - Admin dashboard and user management
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
 from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail, scheduler, photos
