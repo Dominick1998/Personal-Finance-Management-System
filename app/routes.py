@@ -1,20 +1,68 @@
 # app/routes.py
-# 
-# This file contains the route definitions for the Personal Finance Management System.
-# It handles HTTP requests and defines the behavior for each route.
-#
-# Key functionalities provided by this file include:
-# - User authentication (login, logout, registration)
-# - Two-factor authentication (2FA) setup and verification
-# - Profile management (view, update, upload profile picture)
-# - Financial operations (transaction tracking, recurring transactions, investments)
-# - Financial analytics and advanced search
-# - Admin dashboard and user management
-# - Email verification and notification management
-# - Integration with third-party APIs (Plaid for bank transactions, OAuth for Google and Facebook login)
-# - Security features (rate limiting, role-based access control)
-# - Data export and backup/restore functionalities
-# - Additional features like customizable dashboards, voice commands, and mobile app integration
+
+"""
+This file contains the route definitions for the Personal Finance Management System.
+It handles HTTP requests and defines the behavior for each route.
+
+Routes:
+    - Home Page: Displays the main dashboard for the user.
+    - Login: Handles user login with support for rate limiting and OAuth2 login via Google and Facebook.
+    - Logout: Logs the user out of the application.
+    - Register: Handles user registration and sends a confirmation email.
+    - Email Confirmation: Confirms the user's email address.
+    - Profile: Allows the user to view and update their profile.
+    - Change Password: Allows the user to change their password.
+    - Admin Dashboard: Displays the admin dashboard for managing users and transactions.
+    - Financial Analytics: Provides data for financial trend analysis.
+    - Enable 2FA: Enables two-factor authentication for the user.
+    - Verify 2FA: Verifies the user's two-factor authentication code.
+    - Recurring Transactions: Manages the user's recurring transactions.
+    - Advanced Search: Allows the user to search and filter transactions.
+    - Investments: Manages the user's investments.
+    - Upload Receipt: Allows the user to upload a receipt for a transaction.
+    - Serve Uploaded Files: Serves uploaded receipt files.
+    - Backup: Backs up the user's data.
+    - Restore: Restores the user's data from a backup.
+    - Dashboard Configuration: Updates the user's dashboard configuration.
+    - Categorize Transaction: Categorizes a transaction using a machine learning model.
+    - Plaid Link: Links the user's bank account with Plaid and imports transactions.
+    - Send Notification: Sends a notification to users (admin only).
+    - Notification Preferences: Manages the user's notification preferences.
+    - Export Data: Exports the user's data in the specified format.
+    - Delete Account: Deletes the user's account.
+    - Share Goal: Shares the user's financial goal on social media.
+    - Convert Currency: Converts an amount from one currency to another.
+    - Upload Profile Picture: Allows the user to upload a profile picture.
+    - Voice Commands: Handles voice commands for the application.
+    - Mobile API: Provides an API endpoint for integrating with the mobile app.
+
+Utilities:
+    - admin_required: Decorator to restrict access to admin users.
+    - user_required: Decorator to restrict access to regular users.
+    - log_activity: Logs user activity.
+    - generate_confirmation_token: Generates an email confirmation token.
+    - confirm_token: Confirms the token and returns the email.
+    - send_email: Sends an email.
+
+Dependencies:
+    - Flask: Web framework for creating the application backend.
+    - SQLAlchemy: ORM for managing database interactions.
+    - Flask-Login: User session management for login functionality.
+    - Flask-OAuthlib: OAuth2 integration for Google and Facebook login.
+    - Flask-Limiter: Rate limiting to prevent brute force attacks.
+    - Flask-Mail: Sending emails.
+    - PyOTP: Two-factor authentication (2FA).
+    - Joblib: Loading machine learning models.
+    - Requests: Handling HTTP requests (used by Plaid API).
+    - Werkzeug: WSGI utility library.
+    - JSON: Handling JSON data.
+    - Itsdangerous: Generating and confirming tokens.
+    - OS: Handling file paths and operations.
+    - DateTime: Handling date and time operations.
+    - Functools: Higher-order functions and operations on callable objects.
+    - Flask-Uploads: Handling file uploads.
+    - Flask-Swagger-UI: API documentation using Swagger.
+"""
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
 from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail, scheduler, photos
