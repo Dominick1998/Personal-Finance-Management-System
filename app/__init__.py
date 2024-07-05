@@ -21,6 +21,7 @@ from flask_principal import Principal, Permission, RoleNeed
 from flask_mail import Mail
 from flask_apscheduler import APScheduler
 from flask_uploads import configure_uploads, IMAGES, UploadSet
+from flask_swagger_ui import get_swaggerui_blueprint  # For API documentation
 from config import Config
 
 app = Flask(__name__)
@@ -87,6 +88,12 @@ scheduler.start()
 # Configure image uploads
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
+
+# Swagger configuration for API documentation
+SWAGGER_URL = '/api/docs'
+API_URL = '/static/swagger.json'
+swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Personal Finance Management System"})
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 from app import routes, models
 
