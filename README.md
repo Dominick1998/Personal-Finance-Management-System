@@ -55,6 +55,10 @@ A comprehensive web application designed to help users manage their personal fin
 - **Mobile App Integration**: API to integrate with a mobile app.
 - **Voice Commands Integration**: Implement voice commands for hands-free interaction.
 - **Visualizations for Future Predictions**: Use machine learning to predict future expenses and visualize them.
+- **Real-time Notifications**: Provide users with real-time notifications using WebSockets.
+- **GraphQL API Support**: Offer a GraphQL endpoint for API interactions.
+- **Automated Expense Categorization**: Use AI to categorize expenses automatically.
+- **Transaction Approval Workflow**: Allow admins to approve transactions.
 
 ## Tech Stack
 
