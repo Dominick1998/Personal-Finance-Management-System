@@ -22,7 +22,10 @@ from flask_mail import Mail
 from flask_apscheduler import APScheduler
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_swagger_ui import get_swaggerui_blueprint  # For API documentation
+from flask_socketio import SocketIO  # For real-time notifications
+from flask_graphql import GraphQLView  # For GraphQL support
 from config import Config
+from app.schema import schema  # Import GraphQL schema
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -89,11 +92,17 @@ scheduler.start()
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 
+# Initialize Flask-SocketIO for real-time notifications
+socketio = SocketIO(app)
+
 # Swagger configuration for API documentation
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Personal Finance Management System"})
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+# GraphQL setup
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
 from app import routes, models
 
@@ -103,3 +112,6 @@ def load_user(id):
     Load user by ID for Flask-Login.
     """
     return User.query.get(int(id))
+
+if __name__ == '__main__':
+    socketio.run(app)
