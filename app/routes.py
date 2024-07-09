@@ -62,6 +62,8 @@ Dependencies:
     - Functools: Higher-order functions and operations on callable objects.
     - Flask-Uploads: Handling file uploads.
     - Flask-Swagger-UI: API documentation using Swagger.
+    - Flask-SocketIO: Real-time communication.
+    - Flask-GraphQL: GraphQL support.
 """
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
@@ -415,7 +417,7 @@ def verify_2fa():
     form = Verify2FAForm()
     if form.validate_on_submit():
         totp = pyotp.TOTP(user.two_factor_secret)
-        if totp.verify(form.token.data):
+        if totp.verify(form.token.data)):
             login_user(user)
             session.pop('2fa_user_id')
             log_activity(user.id, 'User logged in with 2FA')
