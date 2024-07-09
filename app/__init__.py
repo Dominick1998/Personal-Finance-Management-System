@@ -22,10 +22,9 @@ from flask_mail import Mail
 from flask_apscheduler import APScheduler
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_swagger_ui import get_swaggerui_blueprint  # For API documentation
-from flask_socketio import SocketIO  # For real-time notifications
+from flask_socketio import SocketIO  # For real-time communication
 from flask_graphql import GraphQLView  # For GraphQL support
 from config import Config
-from app.schema import schema  # Import GraphQL schema
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -42,9 +41,7 @@ google = oauth.remote_app(
     'google',
     consumer_key=app.config['GOOGLE_CLIENT_ID'],
     consumer_secret=app.config['GOOGLE_CLIENT_SECRET'],
-    request_token_params={
-        'scope': 'email',
-    },
+    request_token_params={'scope': 'email'},
     base_url='https://www.googleapis.com/oauth2/v1/',
     request_token_url=None,
     access_token_method='POST',
@@ -56,9 +53,7 @@ facebook = oauth.remote_app(
     'facebook',
     consumer_key=app.config['FACEBOOK_CLIENT_ID'],
     consumer_secret=app.config['FACEBOOK_CLIENT_SECRET'],
-    request_token_params={
-        'scope': 'email',
-    },
+    request_token_params={'scope': 'email'},
     base_url='https://graph.facebook.com/',
     request_token_url=None,
     access_token_method='POST',
@@ -92,19 +87,20 @@ scheduler.start()
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 
-# Initialize Flask-SocketIO for real-time notifications
-socketio = SocketIO(app)
-
 # Swagger configuration for API documentation
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Personal Finance Management System"})
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-# GraphQL setup
+# Initialize SocketIO
+socketio = SocketIO(app)
+
+# Register GraphQL view
+from app.graphql_schema import schema
 app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
-from app import routes, models
+from app import routes, models, socketio_events
 
 @login.user_loader
 def load_user(id):
@@ -112,6 +108,3 @@ def load_user(id):
     Load user by ID for Flask-Login.
     """
     return User.query.get(int(id))
-
-if __name__ == '__main__':
-    socketio.run(app)
