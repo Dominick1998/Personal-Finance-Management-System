@@ -35,6 +35,7 @@ Routes:
     - Upload Profile Picture: Allows the user to upload a profile picture.
     - Voice Commands: Handles voice commands for the application.
     - Mobile API: Provides an API endpoint for integrating with the mobile app.
+    - Real-time Notifications: Handles real-time notifications using WebSocket.
 
 Utilities:
     - admin_required: Decorator to restrict access to admin users.
@@ -62,8 +63,7 @@ Dependencies:
     - Functools: Higher-order functions and operations on callable objects.
     - Flask-Uploads: Handling file uploads.
     - Flask-Swagger-UI: API documentation using Swagger.
-    - Flask-SocketIO: Real-time communication.
-    - Flask-GraphQL: GraphQL support.
+    - Flask-SocketIO: Real-time notifications using WebSocket.
 """
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
@@ -781,3 +781,36 @@ def mobile_api():
     # Logic to handle data from the mobile app
     process_mobile_data(data)
     return jsonify({'status': 'success'})
+
+@app.route('/api/notifications', methods=['POST'])
+@login_required
+@user_required
+def api_notifications():
+    """
+    Handle incoming notifications from WebSocket.
+    """
+    data = request.json
+    # Process the incoming notification data
+    return jsonify({'status': 'success'})
+
+@socketio.on('connect')
+def handle_connect():
+    """
+    Handle WebSocket connection event.
+    """
+    print('Client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    """
+    Handle WebSocket disconnection event.
+    """
+    print('Client disconnected')
+
+@socketio.on('notification')
+def handle_notification(json):
+    """
+    Handle incoming notifications via WebSocket.
+    """
+    print(f'Received notification: {json}')
+    socketio.emit('notification_response', {'status': 'received'})
