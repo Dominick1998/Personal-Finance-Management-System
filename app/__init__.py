@@ -29,6 +29,7 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Initialize extensions
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
@@ -93,13 +94,14 @@ API_URL = '/static/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Personal Finance Management System"})
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-# Initialize SocketIO
+# Initialize SocketIO for real-time communication
 socketio = SocketIO(app)
 
-# Register GraphQL view
+# Register GraphQL view for GraphQL support
 from app.graphql_schema import schema
 app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
+# Import routes, models, and socketio events
 from app import routes, models, socketio_events
 
 @login.user_loader
