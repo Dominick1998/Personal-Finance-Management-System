@@ -1,23 +1,28 @@
+# app/socketio_events.py
+
 from app import socketio
-from flask_socketio import send, emit
+from flask_socketio import emit
 from flask_login import current_user
 
-@socketio.on('message')
-def handle_message(msg):
+@socketio.on('connect')
+def handle_connect():
     """
-    Handle incoming messages and broadcast to all connected clients.
+    Handle user connection.
     """
     if current_user.is_authenticated:
-        send({'msg': f'{current_user.username}: {msg}'}, broadcast=True)
-    else:
-        send({'msg': f'Guest: {msg}'}, broadcast=True)
+        emit('message', {'data': f'User {current_user.username} connected'})
 
-@socketio.on('custom_event')
-def handle_custom_event(json):
+@socketio.on('disconnect')
+def handle_disconnect():
     """
-    Handle custom events and broadcast the data.
+    Handle user disconnection.
     """
     if current_user.is_authenticated:
-        emit('response', {'data': f'{current_user.username} says: {json}'}, broadcast=True)
-    else:
-        emit('response', {'data': f'Guest says: {json}'}, broadcast=True)
+        emit('message', {'data': f'User {current_user.username} disconnected'})
+
+@socketio.on('notification')
+def handle_notification(data):
+    """
+    Handle sending notifications to users.
+    """
+    emit('notification', {'data': data}, broadcast=True)
