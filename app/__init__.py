@@ -29,9 +29,13 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Initialize extensions
+# Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+# Initialize Flask-Migrate
 migrate = Migrate(app, db)
+
+# Initialize Flask-Login
 login = LoginManager(app)
 login.login_view = 'login'
 
@@ -97,7 +101,7 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 # Initialize SocketIO for real-time communication
 socketio = SocketIO(app)
 
-# Register GraphQL view for GraphQL support
+# Register GraphQL view for advanced queries and mutations
 from app.graphql_schema import schema
 app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
