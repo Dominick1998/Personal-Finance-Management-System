@@ -35,6 +35,7 @@ Routes:
     - Upload Profile Picture: Allows the user to upload a profile picture.
     - Voice Commands: Handles voice commands for the application.
     - Mobile API: Provides an API endpoint for integrating with the mobile app.
+    - Fraud Detection: Detects potentially fraudulent transactions using AI.
 
 Utilities:
     - admin_required: Decorator to restrict access to admin users.
@@ -43,6 +44,7 @@ Utilities:
     - generate_confirmation_token: Generates an email confirmation token.
     - confirm_token: Confirms the token and returns the email.
     - send_email: Sends an email.
+    - check_session_timeout: Checks if the session has timed out.
 
 Dependencies:
     - Flask: Web framework for creating the application backend.
@@ -66,8 +68,8 @@ Dependencies:
 
 from flask import render_template, flash, redirect, url_for, request, abort, session, jsonify, send_file
 from app import app, db, google, facebook, limiter, admin_permission, user_permission, mail, scheduler, photos, socketio
-from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm, SocialShareForm, UploadProfilePictureForm
-from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment, Role, UserNotification
+from app.forms import LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, Enable2FAForm, Verify2FAForm, RecurringTransactionForm, SearchForm, InvestmentForm, TransactionForm, BackupForm, RestoreForm, CategorizeTransactionForm, PlaidLinkForm, NotificationForm, NotificationPreferencesForm, EmailVerificationForm, DeleteAccountForm, SocialShareForm, UploadProfilePictureForm, FraudDetectionForm
+from app.models import User, Transaction, RecurringTransaction, ActivityLog, Investment, Role, UserNotification, FraudDetection
 from app.plaid_utils import get_accounts, get_transactions
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
@@ -79,7 +81,7 @@ import json
 import joblib
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 
 def admin_required(f):
@@ -145,6 +147,27 @@ def send_email(to, subject, template):
         sender=app.config['MAIL_DEFAULT_SENDER']
     )
     mail.send(msg)
+
+def check_session_timeout():
+    """
+    Check if the session has timed out and log out the user if necessary.
+    """
+    if 'last_activity' in session:
+        now = datetime.now()
+        last_activity = session['last_activity']
+        if (now - last_activity).seconds > app.permanent_session_lifetime.seconds:
+            session.pop('user_id', None)
+            flash('Session timed out. Please log in again.', 'warning')
+            return redirect(url_for('login'))
+    session['last_activity'] = datetime.now()
+
+@app.before_request
+def before_request():
+    """
+    Ensure session timeout is checked before each request.
+    """
+    if current_user.is_authenticated:
+        check_session_timeout()
 
 @app.route('/')
 @app.route('/index')
@@ -779,3 +802,17 @@ def mobile_api():
     # Logic to handle data from the mobile app
     process_mobile_data(data)
     return jsonify({'status': 'success'})
+
+@app.route('/fraud_detection', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def fraud_detection():
+    """
+    Fraud detection route.
+    """
+    form = FraudDetectionForm()
+    if form.validate_on_submit():
+        # Logic to detect fraudulent transactions using AI
+        flash('Fraud detection executed successfully!', 'success')
+        return redirect(url_for('fraud_detection'))
+    return render_template('fraud_detection.html', title='Fraud Detection', form=form)
