@@ -1,7 +1,7 @@
 # app/__init__.py
 
 # This file marks the 'app' directory as a Python package.
-# It may also contain package-level initialization code, such as:
+# It contains package-level initialization code, such as:
 # - Setting up the application instance
 # - Registering blueprints
 # - Configuring extensions
@@ -10,7 +10,7 @@
 # The presence of this file allows you to import from the 'app' package 
 # in other parts of your project, e.g., 'from app import some_module'.
 
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -24,18 +24,21 @@ from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_swagger_ui import get_swaggerui_blueprint  # For API documentation
 from flask_socketio import SocketIO  # For real-time communication
 from flask_graphql import GraphQLView  # For GraphQL support
+from flask_session import Session  # For server-side session management
+from flask_cors import CORS  # For Cross-Origin Resource Sharing
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Initialize SQLAlchemy
+# Enable CORS
+CORS(app)
+
+# Enable server-side session management
+Session(app)
+
 db = SQLAlchemy(app)
-
-# Initialize Flask-Migrate
 migrate = Migrate(app, db)
-
-# Initialize Flask-Login
 login = LoginManager(app)
 login.login_view = 'login'
 
@@ -98,14 +101,13 @@ API_URL = '/static/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Personal Finance Management System"})
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-# Initialize SocketIO for real-time communication
+# Initialize SocketIO
 socketio = SocketIO(app)
 
-# Register GraphQL view for advanced queries and mutations
+# Register GraphQL view
 from app.graphql_schema import schema
 app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
-# Import routes, models, and socketio events
 from app import routes, models, socketio_events
 
 @login.user_loader
@@ -114,3 +116,9 @@ def load_user(id):
     Load user by ID for Flask-Login.
     """
     return User.query.get(int(id))
+
+# Session timeout configuration
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=30)
