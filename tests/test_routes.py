@@ -1,6 +1,8 @@
 import pytest
-from app import db
+from app import app, db
 from app.models import User, Transaction, Investment
+from io import BytesIO
+import pyotp
 
 @pytest.fixture
 def client():
@@ -128,3 +130,160 @@ def test_backup_and_restore(client, init_database):
     response = client.post('/restore', content_type='multipart/form-data', data=backup_data, follow_redirects=True)
     assert response.status_code == 200
     assert b'Your data has been restored successfully!' in response.data
+
+def test_enable_2fa(client, init_database):
+    """
+    Test enabling two-factor authentication (2FA).
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/enable_2fa', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Two-factor authentication has been enabled!' in response.data
+
+def test_verify_2fa(client, init_database):
+    """
+    Test verifying two-factor authentication (2FA).
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    client.post('/enable_2fa', follow_redirects=True)
+    user = User.query.filter_by(username='testuser').first()
+    totp = pyotp.TOTP(user.two_factor_secret)
+    token = totp.now()
+    response = client.post('/verify_2fa', data=dict(token=token), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'User logged in with 2FA' in response.data
+
+def test_categorize_transaction(client, init_database):
+    """
+    Test categorizing a transaction using a machine learning model.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    transaction = Transaction(amount=100, description='Test Transaction', user_id=1)
+    db.session.add(transaction)
+    db.session.commit()
+    response = client.post(f'/categorize_transaction/{transaction.id}', data=dict(
+        description='Grocery shopping'
+    ), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Transaction has been categorized!' in response.data
+
+def test_notification_preferences(client, init_database):
+    """
+    Test updating notification preferences.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/notification_preferences', data=dict(
+        email_notifications=True,
+        sms_notifications=False
+    ), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Notification preferences updated!' in response.data
+
+def test_delete_account(client, init_database):
+    """
+    Test deleting a user account.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/delete_account', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Your account has been deleted.' in response.data
+
+def test_export_data(client, init_database):
+    """
+    Test exporting user data.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.get('/export_data/json', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Content-Type: application/json' in response.headers['Content-Type']
+
+def test_share_goal(client, init_database):
+    """
+    Test sharing a financial goal on social media.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/share_goal', data=dict(
+        goal='Save $5000 for a vacation'
+    ), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Your goal has been shared!' in response.data
+
+def test_convert_currency(client, init_database):
+    """
+    Test currency conversion.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/convert_currency', data=dict(
+        amount=100,
+        from_currency='USD',
+        to_currency='EUR'
+    ), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'converted_amount' in response.json
+
+def test_upload_profile_picture(client, init_database):
+    """
+    Test uploading a profile picture.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    data = {
+        'photo': (BytesIO(b'my file contents'), 'profile.jpg')
+    }
+    response = client.post('/upload_profile_picture', content_type='multipart/form-data', data=data, follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Profile picture has been uploaded!' in response.data
+
+def test_voice_commands(client, init_database):
+    """
+    Test handling voice commands.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/api/voice_commands', json=dict(
+        command='Show my budget'
+    ), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'response' in response.json
+
+def test_mobile_api(client, init_database):
+    """
+    Test the mobile API endpoint.
+    """
+    client.post('/login', data=dict(
+        username='testuser',
+        password='password'
+    ), follow_redirects=True)
+    response = client.post('/api/mobile', json=dict(
+        data='Test data'
+    ), follow_redirects=True)
+    assert response.status_code == 200
+    assert b'status' in response.json
