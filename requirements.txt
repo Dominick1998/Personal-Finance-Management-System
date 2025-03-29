@@ -1,4 +1,4 @@
-//dependencies 
+ 
 
 Flask==2.0.1  # Web framework for creating the application backend
 Flask-SQLAlchemy==2.5.1  # ORM for managing database interactions
