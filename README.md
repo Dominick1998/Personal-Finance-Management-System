@@ -138,7 +138,7 @@ The application should be accessible at `http://localhost:5000`.
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are always welcome! Please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/your-feature`).
@@ -162,5 +162,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [React](https://reactjs.org/)
 - [Chart.js](https://www.chartjs.org/)
 - [Bootstrap](https://getbootstrap.com/)
-
-
