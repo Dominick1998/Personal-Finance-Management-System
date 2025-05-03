@@ -7,11 +7,13 @@
 # - Configuring extensions
 # - Importing and defining package-level variables or functions
 
+
 '''
 The presence of this file allows the import from the 'app' package 
 in other parts of your project, e.g., 'from app import some_module'.
 '''
 
+#start of code 
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
