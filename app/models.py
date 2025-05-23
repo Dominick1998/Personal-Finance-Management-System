@@ -1,4 +1,5 @@
 # app/models.py
+# models for variou user details
 
 from datetime import datetime
 from app import db, login
