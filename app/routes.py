@@ -1,4 +1,4 @@
-# app/routes.py
+# app/routes.py | route definitions
 
 """
 This file contains the route definitions for the Personal Finance Management System.
