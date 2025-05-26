@@ -1,4 +1,3 @@
-
 # run.py
 
 # Import the application instance from the app package
