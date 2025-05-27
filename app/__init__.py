@@ -3,8 +3,6 @@
 # This file marks the 'app' directory as a Python package.
 # It contains package-level initialization code, such as:
 
-
-
 '''
 The presence of this file allows the import from the 'app' package 
 in other parts of your project, e.g., 'from app import some_module'.
