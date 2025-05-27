@@ -1,5 +1,5 @@
 # app/forms.py
-# forms for login/registration, 
+# forms for login/registration, etc.
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, DateTimeField, FileField, TextAreaField, SelectMultipleField
