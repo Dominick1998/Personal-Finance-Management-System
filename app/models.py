@@ -1,5 +1,5 @@
 # app/models.py
-# models for variou user details
+# models for various user details
 # includes, id(username, email), password info, activity log, etc
 
 from datetime import datetime
