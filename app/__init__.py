@@ -6,7 +6,6 @@
 # - Registering blueprints
 # - Configuring extensions
 # - Importing and defining package-level variables or functions
-# importing functions with pycharm
 
 '''
 The presence of this file allows the import from the 'app' package 
