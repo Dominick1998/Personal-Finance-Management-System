@@ -2,8 +2,8 @@
 
 # Variables
 VENV := env
-PYTHON := $(VENV)/bin/python
-PIP := $(VENV)/bin/pip
+PYTHON := $(cVENV)/bin/python
+PIP := $(cVENV)/bin/pip
 
 # Targets / install/activate dependencies 
 
