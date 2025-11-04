@@ -23,4 +23,4 @@ class Config:
     FACEBOOK_CLIENT_SECRET = os.environ.get('FACEBOOK_CLIENT_SECRET')
     SCHEDULER_API_ENABLED = True
     SOCKETIO_MESSAGE_QUEUE = os.environ.get('SOCKETIO_MESSAGE_QUEUE') or 'redis://'
-    # Additional configurations if needed
+    # Additional configurations if needed 
