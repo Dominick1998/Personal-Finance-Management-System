@@ -127,3 +127,4 @@ def make_session_permanent():
     app.permanent_session_lifetime = timedelta(minutes=30)
 
 # end
+#
