@@ -5,7 +5,7 @@ VENV := env
 PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 
-# Targets / install/activate dependencies 
+# Targets / install/activate dependencies
 
 all: install test
 
