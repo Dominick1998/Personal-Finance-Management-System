@@ -1,6 +1,5 @@
 # app/__init__.py
 
-
 # This file marks the 'app' directory as a Python package.
 # It contains package-level initialization code, such as:
 # - Setting up the application instance
