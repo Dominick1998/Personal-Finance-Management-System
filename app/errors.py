@@ -1,6 +1,6 @@
 # app/errors.py
 # includes error codes such as 404(Not Found) and 500(Internal server error).
-# py
+# 
 
 from flask import render_template
 from app import app, db
