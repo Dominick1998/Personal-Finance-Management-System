@@ -17,7 +17,7 @@ $(VENV)/bin/activate: requirements.txt
 
 test:
 	$(PYTHON) -m unittest discover tests
-  $py
+  $pycharm
 
 clean:
 	rm -rf $(VENV)
