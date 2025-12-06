@@ -16,7 +16,7 @@ $(VENV)/bin/activate: requirements.txt
 	$(PIP) install -r requirements.txt
 
 test:
-	$(PYTHON) -m unittest discover tests
+	$(PYTHON) -m unittest discover tests 
 
 clean:
 	rm -rf $(VENV)
