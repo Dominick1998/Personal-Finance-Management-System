@@ -1,4 +1,4 @@
-# Makefile make
+# Makefile 
 
 # Variables
 VENV := env
