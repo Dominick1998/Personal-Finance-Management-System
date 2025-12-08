@@ -7,7 +7,7 @@ PIP := $(VENV)/bin/pip
 
 # Targets / install/activate dependencies
 
-all: install test 
+all: install test
 
 install: $(VENV)/bin/activate
 
