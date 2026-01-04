@@ -1,4 +1,4 @@
-# Makefile 
+# Makefile
 # WIP testing continued
 
 # Variables
