@@ -1,5 +1,5 @@
 # docker-compose.yml 
-# compose docker
+# compose 
 
 version: '3.8'
 
