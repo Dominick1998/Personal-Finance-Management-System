@@ -1,5 +1,5 @@
 # docker-compose.yml 
-# compose hrtf flask
+# compose hrtf 
 
 version: '3.8'
 
