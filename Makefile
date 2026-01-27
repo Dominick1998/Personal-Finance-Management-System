@@ -1,6 +1,5 @@
 # Makefile
 # WIP testing continued 
-# WIP test
 
 # Variables
 VENV := env
