@@ -14,7 +14,7 @@ in other parts of your project, e.g., 'from app import some_module'.
 
 #start of code
 from flask import Flask, session
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy # python 
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
@@ -29,7 +29,7 @@ from flask_socketio import SocketIO  # For real-time communication
 from flask_graphql import GraphQLView  # For GraphQL support
 from flask_session import Session  # For server-side session management
 from flask_cors import CORS  # For Cross-Origin Resource Sharing
-from config import Config
+from config import Config 
 
 app = Flask(__name__)
 app.config.from_object(Config)
