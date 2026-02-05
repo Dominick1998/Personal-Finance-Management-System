@@ -14,7 +14,7 @@ in other parts of your project, e.g., 'from app import some_module'.
 
 #start of code
 from flask import Flask, session
-from flask_sqlalchemy import SQLAlchemy # python SQL 
+from flask_sqlalchemy import SQLAlchemy # python SQL tool-kit / 
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
