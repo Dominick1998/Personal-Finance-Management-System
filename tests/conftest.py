@@ -2,7 +2,6 @@ import pytest
 from app import app, db
 from app.models import User
 
-// fixtesting 
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
