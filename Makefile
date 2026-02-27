@@ -1,7 +1,6 @@
 # Makefile
 # WIP testing continued
 
-
 # Variables
 VENV := env
 PYTHON := $(VENV)/bin/python
