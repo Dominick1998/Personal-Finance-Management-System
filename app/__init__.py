@@ -102,7 +102,7 @@ configure_uploads(app, photos)
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Personal Finance Management System"})
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL) 
 
 # Initialize SocketIO
 socketio = SocketIO(app)
