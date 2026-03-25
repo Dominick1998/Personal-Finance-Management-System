@@ -1,5 +1,5 @@
 // app/static/js/script.js
-//
+// Javascript
 
 // Function to display a notification
 function showNotification(message, type) {
