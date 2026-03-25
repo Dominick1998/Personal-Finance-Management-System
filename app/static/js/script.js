@@ -1,5 +1,6 @@
 // app/static/js/script.js
 
+
 // Function to display a notification
 function showNotification(message, type) {
     const notification = document.createElement('div');
