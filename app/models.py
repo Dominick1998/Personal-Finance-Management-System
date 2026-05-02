@@ -2,7 +2,6 @@
 # models for various user details
 # includes, id(username, email), password info, activity log, etc
 
-
 from datetime import datetime
 from app import db, login
 from flask_login import UserMixin
