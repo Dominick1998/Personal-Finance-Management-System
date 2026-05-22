@@ -1,6 +1,5 @@
 # test routes
-# pytest 
-
+# pyres 
 
 import pytest
 from app import app, db
