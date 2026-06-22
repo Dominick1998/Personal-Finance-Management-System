@@ -1,5 +1,5 @@
 # Dockerfile
-# dock
+# dock file
 
 # Use the official Python image from the Docker Hub
 FROM python:3.8-slim
